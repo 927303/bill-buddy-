@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bill Buddy – Never miss a payment again</title>
+<meta name="theme-color" content="#0b3524"><link rel="manifest" href="manifest.json"><link rel="icon" href="img/icon-192.png"><link rel="apple-touch-icon" href="img/icon-192.png">
+<style>
+:root{--card:rgba(8,30,18,.66);--tx:#f6f1d9;--mut:#b9c7a8;--ac:#f5c15a;--b1:#2f8f5b;--b2:#1f6f4a;--bt:#fff;--line:#ffffff24;--bad:#ff7b7b;--ok:#7be0a4;color-scheme:dark;padding-top:env(safe-area-inset-top,0px)}
+body[data-t="light"]{--card:rgba(255,255,255,.74);--tx:#14231b;--mut:#55655b;--ac:#14231b;--b1:#2a2a2a;--b2:#000;--line:#00000022;--bad:#c23a3a;--ok:#1f7a49;color-scheme:light}
+body[data-t="dark"]{--card:rgba(6,20,12,.8);--tx:#e9eed2;--mut:#a9b896;--ac:#d3e6a6;--b1:#4f8a53;--b2:#2d5a34}
+*{box-sizing:border-box}body{margin:0;color:var(--tx);font:15px/1.5 system-ui,sans-serif;background:#0b3524 var(--bg) center/cover fixed;min-height:100vh}
+h2,h3,.big{font-family:Georgia,serif;margin:0}h2{font-size:24px}input,select,button{font:inherit;color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:14px 14px 100px}
+.card{background:var(--card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 10px 28px -14px #000a}
+.mut{color:var(--mut);font-size:13px}
+input[type=text],input[type=email],input[type=date],input[type=number]{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#ffffff14;margin:4px 0 10px}
+label{font-size:13px;color:var(--mut)}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;color:var(--bt);background:linear-gradient(135deg,var(--b1),var(--b2));transition:transform .15s}.btn:active{transform:scale(.96)}
+.btn.o{background:transparent;border:1px solid var(--line);color:var(--tx)}.btn.w{width:100%}.btn:disabled{opacity:.45}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.sp{justify-content:space-between}
+.chip{border:1px solid var(--line);background:#ffffff12;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px}.chip.on{background:var(--ac);color:#111;border-color:var(--ac)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;overflow-x:auto;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#06140ddd;backdrop-filter:blur(14px);border-top:1px solid var(--line);z-index:5}
+body[data-t="light"] nav{background:#ffffffdd}
+nav button{flex:1;min-width:64px;background:none;border:0;padding:6px;border-radius:10px;font-size:12px;cursor:pointer;color:var(--mut)}nav button.on{color:var(--ac);background:#ffffff14;font-weight:700}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}.top img{width:38px;height:38px;border-radius:50%}
+.tag{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid currentColor}.late{color:var(--bad)}.soon{color:var(--ac)}.fine{color:var(--ok)}
+.bar{height:7px;border-radius:7px;background:#ffffff20;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--b1),var(--ac))}
+.big{font-size:32px}.view{display:none}.view.on{display:block;animation:r .4s ease-out}@keyframes r{from{opacity:0;transform:translateY(10px)}}
+.banner{border:1px solid var(--ac);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14px}
+.login{max-width:420px;margin:6vh auto 0;text-align:center}.login img{width:96px;border-radius:50%}.otp{font-size:28px;letter-spacing:10px;text-align:center}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+dialog{border:1px solid var(--line);border-radius:18px;width:calc(100% - 24px);max-width:420px;padding:18px;background:#0b2016;color:#f6f1d9}dialog::backdrop{background:#000b}
+.prem{margin:-14px;padding:20px 14px 24px;border-radius:0 0 22px 22px;background:radial-gradient(circle at 15% 0,#7c3aed66,transparent 45%),radial-gradient(circle at 90% 20%,#e11d4855,transparent 45%),linear-gradient(160deg,#1b0b33,#2a0c3d 55%,#3a0d2c);color:#fff}
+.plans{display:grid;gap:14px;margin-top:16px;perspective:900px}
+.pl{position:relative;padding:18px;border-radius:20px;background:#ffffff14;border:1px solid #ffffff30;box-shadow:0 22px 40px -20px #000,inset 0 1px 0 #ffffff40;transition:transform .25s}.pl:hover{transform:translateY(-4px) rotateX(3deg)}
+.pl.best{border:2px solid #f5c15a;box-shadow:0 22px 50px -16px #e11d48aa}
+.pr{font-size:34px;font-family:Georgia,serif;background:linear-gradient(#fff,#f5c15a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.badge{position:absolute;top:-12px;right:14px;background:#f5c15a;color:#2a0c3d;font-weight:800;font-size:12px;padding:3px 12px;border-radius:999px}
+.pl ul{margin:8px 0 14px;padding-left:18px;font-size:14px}.go{background:linear-gradient(120deg,#e11d48,#7c3aed);color:#fff}.best .go{background:linear-gradient(120deg,#f5c15a,#e11d48)}
+#qr{background:#fff;padding:10px;border-radius:14px;width:fit-content;margin:10px auto}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#06140d;color:#f6f1d9;border:1px solid var(--ac);padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;max-width:90%}.toast.on{opacity:1}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body data-t="emerald">
+<div class="wrap">
+<div id="upd" class="banner" hidden>🆕 A new version of Bill Buddy is ready <button class="chip" id="updBtn">Update now</button></div>
+<section class="view on" id="v-login"><div class="login card">
+ <img src="img/logo.png" alt="Bill Buddy"><h2 style="margin-top:8px" id="lTitle"></h2><p class="mut" id="lSub"></p>
+ <button class="btn w" style="background:#fff;color:#222" id="gBtn"><b style="color:#4285F4">G</b> Continue with Google</button>
+ <p class="mut">— or continue with Gmail OTP —</p>
+ <div id="st1" style="text-align:left"><label>Your name</label><input type="text" id="nm" autocomplete="name"><label>Gmail</label><input type="email" id="em" placeholder="you@gmail.com" autocomplete="email">
+  <label class="row"><input type="checkbox" id="keep"> Keep me logged in on this device</label><button class="btn w" style="margin-top:10px" id="send">Send OTP →</button></div>
+ <div id="st2" hidden><p class="mut" id="sentTo"></p><input type="text" id="otp" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+  <div class="row sp"><button class="btn o" id="chg">Change email</button><button class="btn o" id="rs">Resend OTP</button></div></div>
+ <div class="err" id="lerr" role="alert"></div>
+ <p class="mut">Your privacy matters to us. Bill Buddy only asks for the information needed to manage your reminders. Your records stay private. We do not ask for your bank passwords, UPI PIN or OTP.</p>
+ <p class="mut"><b>No bank passwords. No UPI PIN. No OTP.</b></p>
+ <div class="row" style="justify-content:center"><button class="chip" data-l="en">English</button><button class="chip" data-l="hi">हिन्दी</button><button class="chip" data-l="hn">Hinglish</button></div>
+ <p class="mut"><a href="site.html#features" style="color:inherit">Features</a> · <a href="site.html#pricing" style="color:inherit">Pricing</a> · <a href="site.html#download" style="color:inherit">Download</a> · <a href="site.html#privacy" style="color:inherit">Privacy</a></p>
+</div></section>
+<div id="app" hidden>
+ <div class="top"><img src="img/logo.png" alt=""><h3 style="flex:1">Bill Buddy</h3><span class="mut" id="who"></span></div><div id="trialBar"></div>
+ <section class="view" id="v-home"><h2 id="greet"></h2>
+  <div class="card"><div class="mut" id="hl1"></div><div class="big" id="week"></div><div class="bar"><i id="pbar" style="width:0"></i></div><div class="mut" id="paidm"></div></div>
+  <button class="btn w" data-add="1" id="addTop"></button><h3 style="margin:16px 0 8px" id="hUp"></h3><div id="upc"></div>
+  <h3 style="margin:16px 0 8px">Overview</h3><div class="row" id="ov"></div></section>
+ <section class="view" id="v-bills"><h2 id="hBills"></h2><input type="text" id="bq" placeholder="Search"><div id="bl"></div><button class="btn w" data-add="1">➕</button></section>
+ <section class="view" id="v-udhar"><h2>Udhar</h2><div class="row" id="usum"></div><div id="ul"></div><button class="btn w" id="uAdd">➕ Udhar</button></section>
+ <section class="view" id="v-prem"><div class="prem"><h2>👑 Go Premium</h2><p style="opacity:.85;margin:4px 0">Never miss a payment again.</p><div class="row" id="pstat"></div><div class="plans" id="plans"></div><p style="text-align:center;opacity:.85;font-size:13px">🔒 Private. No bank passwords, PIN or OTP</p></div>
+  <h3 style="margin:18px 0 8px">My payment requests</h3><div id="myreq"></div></section>
+ <section class="view" id="v-admin"><h2>Admin</h2><div id="areq"></div></section>
+ <section class="view" id="v-set"><h2 id="hSet"></h2>
+  <div class="card"><b>Language</b><div class="row" style="margin-top:8px"><button class="chip" data-l="en">English</button><button class="chip" data-l="hi">हिन्दी</button><button class="chip" data-l="hn">Hinglish</button></div></div>
+  <div class="card"><b>Themes</b><div class="row" style="margin-top:8px"><button class="chip" data-th="emerald">Emerald Waves</button><button class="chip" data-th="light">Light Topographic</button><button class="chip" data-th="dark">Dark Topographic</button></div></div>
+  <div class="card"><b>Privacy</b><p class="mut">Your privacy matters to us. Bill Buddy only asks for the information needed to manage your reminders. We do not ask for your bank passwords, UPI PIN or OTP.</p></div>
+  <div class="card"><div class="mut" id="ver"></div><div class="row"><button class="btn o" id="chk">🔄 Check for updates</button><a class="btn o" id="help" href="mailto:official.billbuddy@gmail.com">Contact support</a><button class="btn o" id="out">Log out</button></div></div></section>
+</div></div>
+<nav id="nav" hidden></nav>
+<dialog id="dBill"><h3>Add bill</h3><label>What is this bill for?</label><input type="text" id="bn"><div class="row" id="quick"></div><label>Amount ₹</label><input type="number" id="ba" inputmode="decimal"><label>Due date</label><input type="date" id="bd">
+ <label>Repeat</label><select id="br" style="width:100%;padding:12px;border-radius:12px;background:#ffffff14;margin:4px 0 10px"><option value="0">Only once</option><option value="w">Every week</option><option value="1" selected>Every month</option><option value="3">Every 3 months</option><option value="12">Every year</option></select>
+ <label>Remind me from how many days before?</label><input type="number" id="bb" value="3" min="0" max="30"><div class="err" id="berr"></div><div class="row"><button class="btn" id="bSave">Save</button><button class="btn o" data-x="dBill">Cancel</button></div></dialog>
+<dialog id="dB"><div id="bInfo"></div><div class="row" style="margin-top:12px"><button class="btn" id="bPaid">✓ Mark paid</button><button class="btn o" id="bDel">Delete</button><button class="btn o" data-x="dB">Close</button></div></dialog>
+<dialog id="dU"><h3>Udhar</h3><select id="ut" style="width:100%;padding:12px;border-radius:12px;background:#ffffff14;margin-bottom:10px"><option value="lent">I lent</option><option value="borrowed">I borrowed</option></select><label>Person</label><input type="text" id="up"><label>Amount ₹</label><input type="number" id="ua" inputmode="decimal"><div class="err" id="uerr"></div><div class="row"><button class="btn" id="uSave">Save</button><button class="btn o" data-x="dU">Cancel</button></div></dialog>
+<dialog id="dR"><h3>Repayment</h3><label>Amount ₹</label><input type="number" id="rv" inputmode="decimal"><div class="row"><button class="btn" id="rSave">Save</button><button class="btn o" data-x="dR">Cancel</button></div></dialog>
+<dialog id="dG"><h3>Choose your Gmail account</h3><p class="mut">You will confirm with an OTP next.</p><input type="email" id="gem" placeholder="Use another Gmail"><div class="row"><button class="btn" id="gGo">Continue</button><button class="btn o" data-x="dG">Cancel</button></div></dialog>
+<dialog id="dPay"><h3 id="pTitle"></h3><div id="pAmt" class="big"></div><div id="qr"></div><div class="mut" id="pTimer" style="text-align:center"></div>
+ <div class="row" style="justify-content:center"><b id="pUpi"></b><button class="chip" id="cpy">Copy</button></div><div class="row" style="justify-content:center;margin:8px 0"><a class="btn" id="payApp" href="#">Pay with UPI app</a></div>
+ <p class="mut" style="text-align:center">Scan with any UPI app (PhonePe, GPay, Paytm, BHIM)</p><label>UPI Transaction ID / UTR</label><input type="text" id="utr" maxlength="30"><div class="err" id="perr"></div>
+ <div class="row"><button class="btn" id="pSend">Send Request to Owner</button><button class="btn o" data-x="dPay">Close</button></div><p class="mut">Typing a transaction ID does not activate Premium. Only the owner's verification does.</p></dialog>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="config.js"></script>
+<script>
+const CF=window.BB,L={en:{title:"Welcome to Bill Buddy",sub:"Start your 7-day free trial. No card needed.",home:"Home",bills:"Bills",udhar:"Udhar",prem:"Premium",set:"Settings",admin:"Admin",add:"➕ Add bill",up:"Upcoming",gm:"Good morning",ga:"Good afternoon",ge:"Good evening",week:"Due this week",paid:"Paid this month",end:"Your free trial has ended. Choose a plan to continue.",none:"Nothing here yet. Tap + to add."},
+hi:{title:"Bill Buddy में स्वागत है",sub:"7 दिन का मुफ़्त ट्रायल शुरू करें। कार्ड नहीं चाहिए।",home:"होम",bills:"बिल",udhar:"उधार",prem:"प्रीमियम",set:"सेटिंग्स",admin:"एडमिन",add:"➕ बिल जोड़ें",up:"आने वाले",gm:"सुप्रभात",ga:"नमस्कार",ge:"शुभ संध्या",week:"इस हफ़्ते देय",paid:"इस महीने भुगतान",end:"आपका मुफ़्त ट्रायल खत्म हो गया है। जारी रखने के लिए प्लान चुनें।",none:"यहाँ अभी कुछ नहीं है। जोड़ने के लिए + दबाएँ।"},
+hn:{title:"Bill Buddy mein swagat hai",sub:"7 din ka free trial shuru karo. Card nahi chahiye.",home:"Home",bills:"Bills",udhar:"Udhar",prem:"Premium",set:"Settings",admin:"Admin",add:"➕ Bill jodo",up:"Aane wale",gm:"Good morning",ga:"Good afternoon",ge:"Good evening",week:"Is hafte dena hai",paid:"Is mahine paid",end:"Aapka free trial khatam ho gaya. Aage chalane ke liye plan chuno.",none:"Abhi kuch nahi hai. Jodne ke liye + dabao."}};
+const FEAT={1:["Unlimited bills & partial repayments","Advanced analytics & insights","Custom themes unlocked","Export reports (CSV)","Ad-free experience"],6:["Everything in 1 Month","Priority support"],12:["Everything in 6 Months","Early access to new features"]};
+let sb,me=null,bills=[],udhar=[],upay=[],reqs=[],plans=[],isAdmin=false,lang=localStorage.getItem("bb_lang")||"en",tab="home",cur=null,ui=null,pend=null,payT=null,payExp=0,cdIv=null,tries=0,lockUntil=0,otpEmail="";
+const $=s=>document.querySelector(s),t=k=>L[lang][k]||L.en[k],toast=m=>{const e=$("#toast");e.textContent=m;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),3200)};
+const fmt=d=>new Date(d).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}),inr=n=>"₹"+Math.round(n).toLocaleString("en-IN"),iso=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d},dayDiff=d=>Math.round((new Date(d+"T00:00:00")-today())/864e5);
+const norm=e=>{e=e.trim().toLowerCase();let[u,d]=e.split("@");if(d=="gmail.com"||d=="googlemail.com"){u=u.split("+")[0].replace(/\./g,"");d="gmail.com"}return u+"@"+d};
+function addM(d,n){const x=new Date(d),day=x.getDate();x.setDate(1);x.setMonth(x.getMonth()+n);const last=new Date(x.getFullYear(),x.getMonth()+1,0).getDate();x.setDate(Math.min(day,last));return x}
+const nextDue=(d,r)=>{const x=new Date(d+"T00:00:00");return r=="w"?new Date(x.getTime()+7*864e5):addM(x,+r)};
+const active=()=>me&&!me.suspended&&(new Date(me.trial_ends_at)>new Date()||(me.premium_until&&new Date(me.premium_until)>new Date()));
+const tagOf=n=>n<0?`<span class="tag late">${-n} days late</span>`:n==0?'<span class="tag soon">Due today</span>':n==1?'<span class="tag soon">Tomorrow</span>':`<span class="tag ${n<=3?"soon":"fine"}">${n} days</span>`;
+function applyTheme(k){document.body.dataset.t=k;document.body.style.setProperty("--bg","url(img/bg-"+k+".webp)");localStorage.setItem("bb_theme",k)}
+function mk(keep){sb=supabase.createClient(CF.SUPABASE_URL,CF.SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:keep?window.localStorage:window.sessionStorage}})}
+function setLang(l){lang=l;localStorage.setItem("bb_lang",l);document.documentElement.lang=l=="hi"?"hi":"en";document.querySelectorAll("[data-l]").forEach(b=>b.classList.toggle("on",b.dataset.l==l));$("#lTitle").textContent=t("title");$("#lSub").textContent=t("sub");if(me)render()}
+function show(k){tab=k;document.querySelectorAll(".view").forEach(v=>v.classList.toggle("on",v.id=="v-"+k));if(k=="admin")loadAdmin();render()}
+async function load(){const{data:{user}}=await sb.auth.getUser();if(!user)return false;
+ const[p,pl,b,u,up,rq,ad]=await Promise.all([sb.from("profiles").select("*").eq("id",user.id).single(),sb.from("plans").select("*").eq("active",true).order("months"),sb.from("bills").select("*").order("due_date"),sb.from("udhar").select("*").order("created_at"),sb.from("udhar_payments").select("*"),sb.from("payment_requests").select("*").eq("user_id",user.id).order("created_at",{ascending:false}),sb.rpc("is_admin")]);
+ if(p.error||!p.data){toast("Profile load nahi hui. Dobara login karo.");return false}
+ me=p.data;if(me.suspended){await sb.auth.signOut();$("#lerr").textContent="This account is suspended. Contact support.";me=null;return false}
+ plans=pl.data||[];bills=b.data||[];udhar=u.data||[];upay=up.data||[];reqs=rq.data||[];isAdmin=ad.data===true;
+ if(me.theme&&!localStorage.getItem("bb_theme"))applyTheme(me.theme);
+ $("#v-login").classList.remove("on");$("#app").hidden=false;$("#nav").hidden=false;show("home");return true}
+function render(){if(!me)return;const hr=new Date().getHours();$("#greet").textContent=(hr<12?t("gm"):hr<17?t("ga"):t("ge"))+", "+(me.name||"")+" 👋";$("#who").textContent=me.email_norm;
+ const tabs=[["home",t("home")],["bills",t("bills")],["udhar",t("udhar")],["prem",t("prem")],["set",t("set")]];if(isAdmin)tabs.push(["admin",t("admin")]);
+ $("#nav").innerHTML=tabs.map(x=>`<button data-tab="${x[0]}" class="${tab==x[0]?"on":""}">${x[1]}</button>`).join("");
+ $("#addTop").textContent=t("add");$("#hUp").textContent=t("up");$("#hBills").textContent=t("bills");$("#hSet").textContent=t("set");$("#hl1").textContent=t("week");$("#ver").textContent="Bill Buddy v"+CF.VERSION;
+ const open=bills.filter(b=>!b.done);const wk=open.filter(b=>dayDiff(b.due_date)<=7).reduce((s,b)=>s+ +b.amount,0);
+ const mo=iso(new Date()).slice(0,7),pm=0;let paidM=0;(window._bp||[]).forEach(p=>{if(p.paid_on.slice(0,7)==mo)paidM+= +p.amount});
+ const tot=paidM+open.filter(b=>b.due_date.slice(0,7)==mo).reduce((s,b)=>s+ +b.amount,0);
+ $("#week").textContent=inr(wk);$("#paidm").textContent=t("paid")+" "+inr(paidM)+" / "+inr(tot);$("#pbar").style.width=(tot?paidM/tot*100:0)+"%";
+ const row=b=>`<div class="card row sp" data-bill="${b.id}" style="cursor:pointer"><div><b>${esc(b.name)}</b><div class="mut">${fmt(b.due_date)} · ${b.repeat=="0"?"once":b.repeat=="w"?"weekly":b.repeat=="1"?"monthly":"every "+b.repeat+" mo"}</div></div><div style="text-align:right"><b>${inr(b.amount)}</b><br>${tagOf(dayDiff(b.due_date))}</div></div>`;
+ $("#upc").innerHTML=open.length?open.slice(0,5).map(row).join(""):`<div class="card mut">${t("none")}</div>`;
+ const q=$("#bq").value.toLowerCase(),fl=open.filter(b=>b.name.toLowerCase().includes(q));$("#bl").innerHTML=fl.length?fl.map(row).join(""):`<div class="card mut">${t("none")}</div>`;
+ const left=u=>u.amount-upay.filter(p=>p.udhar_id==u.id).reduce((s,p)=>s+ +p.amount,0);
+ const get=udhar.filter(u=>u.kind=="lent").reduce((s,u)=>s+left(u),0),owe=udhar.filter(u=>u.kind=="borrowed").reduce((s,u)=>s+left(u),0);
+ $("#usum").innerHTML=`<div class="card" style="flex:1">You will get<br><b>${inr(get)}</b></div><div class="card" style="flex:1">You owe<br><b>${inr(owe)}</b></div>`;
+ $("#ov").innerHTML=[["Overdue",open.filter(b=>dayDiff(b.due_date)<0).length],["Upcoming",inr(open.reduce((s,b)=>s+ +b.amount,0))],["You will get",inr(get)],["You owe",inr(owe)]].map(a=>`<div class="card" style="flex:1 1 40%;margin:0"><div class="mut">${a[0]}</div><b>${a[1]}</b></div>`).join("");
+ $("#ul").innerHTML=udhar.length?udhar.map(u=>{const lf=left(u);return `<div class="card"><div class="row sp"><b>${u.kind=="lent"?"Lent to":"Borrowed from"} ${esc(u.person)}</b><b>${inr(lf)} left</b></div><div class="bar"><i style="width:${(u.amount-lf)/u.amount*100}%"></i></div><div class="row" style="margin-top:8px"><button class="chip" data-part="${u.id}">+ Repayment</button><button class="chip" data-settle="${u.id}">✓ Settle full</button>${u.kind=="lent"?`<a class="chip" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent("Hi "+u.person+", ₹"+lf+" ka udhar baaki hai. Jab ho sake wapas kar dena 🙏 (Bill Buddy)")}">💬 WhatsApp</a>`:""}<button class="chip" data-udel="${u.id}">Delete</button></div></div>`}).join(""):`<div class="card mut">${t("none")}</div>`;
+ const pu=me.premium_until&&new Date(me.premium_until)>new Date(),exp=pu?new Date(me.premium_until):new Date(me.trial_ends_at),dl=Math.max(0,Math.ceil((exp-new Date())/864e5));
+ $("#trialBar").innerHTML=active()?(pu?`<div class="banner">Premium active until ${fmt(exp)}</div>`:`<div class="banner">Free trial: ${dl} day(s) left</div>`):`<div class="banner">${t("end")} <button class="chip" data-tab="prem">Choose a plan</button></div>`;
+ $("#pstat").innerHTML=[["Status",active()?(pu?"Active":"Free trial"):"Expired"],["Expiry",fmt(exp)],["Days left",dl]].map(a=>`<div class="card" style="flex:1;background:#ffffff14;margin:0"><div style="opacity:.7;font-size:12px">${a[0]}</div><b>${a[1]}</b></div>`).join("");
+ const base=plans.length?plans[0].price_inr/plans[0].months:50;
+ $("#plans").innerHTML=plans.map(p=>`<div class="pl ${p.months==6?"best":""}">${p.months==6?'<span class="badge">⭐ BEST VALUE</span>':""}<h3>${p.label}</h3><div class="pr">₹${p.price_inr}</div><div style="opacity:.75;font-size:13px">₹${(p.price_inr/p.months).toFixed(1)}/month${p.months>1?" · save "+Math.round((1-p.price_inr/(p.months*base))*100)+"%":""}</div><ul>${(FEAT[p.months]||[]).map(f=>`<li>${f}</li>`).join("")}</ul><button class="btn w go" data-plan="${p.months}">${p.months==6?"Go Premium":"Upgrade Now"}</button></div>`).join("");
+ $("#myreq").innerHTML=reqs.length?reqs.map(r=>`<div class="card"><b>${r.months} month(s)</b> · ₹${r.amount_inr} <span class="tag ${r.status=="approved"?"fine":r.status=="rejected"?"late":"soon"}">${r.status}</span><div class="mut">${r.request_code} · UTR ${r.utr}</div>${r.status=="pending"?'<div class="mut">Your payment request has been submitted successfully. Our team will verify your payment and activate your subscription within 5–10 hours.</div>':""}</div>`).join(""):'<div class="card mut">No requests yet.</div>'}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function loadBP(){const r=await sb.from("bill_payments").select("paid_on,amount");window._bp=r.data||[]}
+async function refresh(){const[b,u,up,rq,p]=await Promise.all([sb.from("bills").select("*").order("due_date"),sb.from("udhar").select("*").order("created_at"),sb.from("udhar_payments").select("*"),sb.from("payment_requests").select("*").eq("user_id",me.id).order("created_at",{ascending:false}),sb.from("profiles").select("*").eq("id",me.id).single()]);bills=b.data||[];udhar=u.data||[];upay=up.data||[];reqs=rq.data||[];if(p.data)me=p.data;await loadBP();render()}
+async function loadAdmin(){const r=await sb.from("payment_requests").select("*").order("created_at",{ascending:false});const list=r.data||[];const ids=[...new Set(list.map(x=>x.user_id))];
+ const pr=ids.length?(await sb.from("profiles").select("id,name,email_norm").in("id",ids)).data||[]:[];const pm=Object.fromEntries(pr.map(p=>[p.id,p]));
+ $("#areq").innerHTML=list.length?list.map(x=>{const p=pm[x.user_id]||{};return `<div class="card"><b>${esc(p.name||"")}</b> · ${esc(p.email_norm||"")}<br>${x.months} month(s) · ₹${x.amount_inr}<div class="mut">${x.request_code} · UTR ${x.utr} · ${fmt(x.created_at)} · <b>${x.status}</b></div>${x.status=="pending"?`<div class="row" style="margin-top:8px"><button class="btn" data-ap="${x.id}">Approve &amp; Activate</button><button class="btn o" data-rj="${x.id}">Reject</button></div>`:""}</div>`}).join(""):'<div class="card mut">No payment requests.</div>'}
+async function decide(id,ok){const{error}=await sb.rpc("admin_decide_payment",{p_id:id,p_approve:ok});if(error){toast("Error: "+error.message);return}toast(ok?"Premium activated":"Rejected");loadAdmin()}
+async function sendOtp(){const nm=$("#nm").value.trim(),em=$("#em").value.trim();if(!nm||!/^[^@\s]+@(gmail|googlemail)\.com$/i.test(em)){$("#lerr").textContent="Enter your name and a valid Gmail.";return}
+ if(Date.now()<lockUntil){$("#lerr").textContent="Too many wrong attempts. Try again in 5 minutes.";return}
+ mk($("#keep").checked);otpEmail=norm(em);$("#send").disabled=true;$("#lerr").textContent="";
+ const{error}=await sb.auth.signInWithOtp({email:otpEmail,options:{shouldCreateUser:true,data:{name:nm}}});$("#send").disabled=false;
+ if(error){$("#lerr").textContent=error.message.includes("rate")?"Please wait a minute before asking for another OTP.":"Could not send OTP: "+error.message;return}
+ if($("#keep").checked)localStorage.setItem("bb_keep","1");else localStorage.removeItem("bb_keep");
+ tries=0;$("#st1").hidden=true;$("#st2").hidden=false;$("#sentTo").textContent="We sent a 6-digit code to "+otpEmail;$("#otp").value="";$("#otp").focus();cooldown()}
+function cooldown(){let c=60;$("#rs").disabled=true;clearInterval(cdIv);$("#rs").textContent="Resend in 60s";cdIv=setInterval(()=>{c--;$("#rs").textContent=c>0?"Resend in "+c+"s":"Resend OTP";if(c<=0){$("#rs").disabled=false;clearInterval(cdIv)}},1000)}
+$("#send").onclick=sendOtp;$("#chg").onclick=()=>{$("#st1").hidden=false;$("#st2").hidden=true};$("#rs").onclick=async()=>{const{error}=await sb.auth.signInWithOtp({email:otpEmail});toast(error?error.message:"New OTP sent");if(!error)cooldown()};
+$("#otp").oninput=async e=>{e.target.value=e.target.value.replace(/\D/g,"");if(e.target.value.length<6)return;if(Date.now()<lockUntil){$("#lerr").textContent="Locked. Try again in 5 minutes.";return}
+ e.target.disabled=true;const{error}=await sb.auth.verifyOtp({email:otpEmail,token:e.target.value,type:"email"});e.target.disabled=false;
+ if(error){tries++;e.target.value="";if(tries>=5){lockUntil=Date.now()+300000;$("#lerr").textContent="Too many wrong attempts. Locked for 5 minutes."}else $("#lerr").textContent="Wrong or expired OTP. "+(5-tries)+" tries left."}
+ else{$("#lerr").textContent="";if(!(await load()))$("#lerr").textContent=$("#lerr").textContent||"Login failed. Try again.";else loadBP().then(render)}};
+$("#gBtn").onclick=()=>$("#dG").showModal();$("#gGo").onclick=()=>{const v=$("#gem").value.trim();if(!/^[^@\s]+@(gmail|googlemail)\.com$/i.test(v)){toast("Enter a valid Gmail");return}$("#em").value=v;if(!$("#nm").value)$("#nm").value=v.split("@")[0];$("#dG").close();sendOtp()};
+const quick=[["Netflix","Subscription"],["Spotify","Subscription"],["Home EMI","EMI"],["Rent","Rent"],["Electricity","Bill"],["Mobile recharge","Bill"],["Insurance","Insurance"]];
+$("#quick").innerHTML=quick.map(q=>`<button class="chip" data-q="${q[0]}" data-cat="${q[1]}">${q[0]}</button>`).join("");let qcat=null;
+function openAdd(){if(!active()){toast(t("end"));show("prem");return}$("#bn").value=$("#ba").value="";qcat=null;$("#bd").value=iso(new Date());$("#berr").textContent="";$("#dBill").showModal()}
+$("#bSave").onclick=async()=>{const n=$("#bn").value.trim(),a=parseFloat($("#ba").value),d=$("#bd").value;if(!n||!(a>0)||!d){$("#berr").textContent="Enter name, amount and date.";return}
+ const{error}=await sb.from("bills").insert({user_id:me.id,name:n,category:qcat,amount:a,due_date:d,repeat:$("#br").value,remind_days:+$("#bb").value});if(error){$("#berr").textContent="Could not save: "+error.message;return}$("#dBill").close();await refresh();toast("Bill added")};
+$("#uAdd").onclick=()=>{if(!active()){toast(t("end"));show("prem");return}$("#up").value=$("#ua").value="";$("#uerr").textContent="";$("#dU").showModal()};
+$("#uSave").onclick=async()=>{const p=$("#up").value.trim(),a=parseFloat($("#ua").value);if(!p||!(a>0)){$("#uerr").textContent="Enter a person and amount.";return}const{error}=await sb.from("udhar").insert({user_id:me.id,kind:$("#ut").value,person:p,amount:a});if(error){$("#uerr").textContent=error.message;return}$("#dU").close();refresh()};
+function openPay(m){pend=plans.find(p=>p.months==m);$("#pTitle").textContent=pend.label+" plan";$("#pAmt").textContent="₹"+pend.price_inr;$("#pUpi").textContent=CF.UPI_ID;$("#utr").value="";$("#perr").textContent="";genQr();$("#dPay").showModal()}
+function genQr(){const url=`upi://pay?pa=${CF.UPI_ID}&pn=Bill%20Buddy&am=${pend.price_inr}&cu=INR&tn=BillBuddy%20${encodeURIComponent(pend.label)}`;$("#payApp").href=url;$("#qr").innerHTML="";new QRCode($("#qr"),{text:url,width:200,height:200});payExp=Date.now()+600000;clearInterval(payT);
+ payT=setInterval(()=>{const s=Math.max(0,Math.round((payExp-Date.now())/1000));if(!s){clearInterval(payT);$("#qr").innerHTML='<div style="color:#333;padding:30px">This QR has expired.<br><button class="btn" id="regen">Generate new QR</button></div>';$("#pTimer").textContent="";$("#regen").onclick=genQr;return}$("#pTimer").textContent="This QR expires in "+Math.floor(s/60)+":"+String(s%60).padStart(2,"0")},500)}
+$("#cpy").onclick=async()=>{try{await navigator.clipboard.writeText(CF.UPI_ID);toast("UPI ID copied")}catch(_){toast("Copy it manually")}};
+$("#pSend").onclick=async()=>{const u=$("#utr").value.trim().toUpperCase();if(!/^[A-Z0-9]{8,30}$/.test(u)){$("#perr").textContent="Enter a valid 8–30 character transaction ID.";return}
+ $("#pSend").disabled=true;const{data,error}=await sb.rpc("create_payment_request",{p_months:pend.months,p_utr:u});$("#pSend").disabled=false;
+ if(error){$("#perr").textContent=/duplicate|unique/i.test(error.message)?"This transaction ID was already submitted.":/pending/i.test(error.message)?"You already have 3 pending requests.":"Error: "+error.message;return}
+ clearInterval(payT);$("#dPay").close();await refresh();toast("Request "+data+" submitted. Verification takes 5–10 hours.")};
+document.addEventListener("click",async e=>{const b=e.target.closest("button,a");if(!b)return;const d=b.dataset;
+ if(d.tab)show(d.tab);if(d.l)setLang(d.l);if(d.th){applyTheme(d.th);if(me)sb.from("profiles").update({theme:d.th}).eq("id",me.id)}if(d.x)$("#"+d.x).close();if(d.add)openAdd();if(d.q){$("#bn").value=d.q;qcat=d.cat}if(d.plan)openPay(+d.plan);
+ if(d.bill){cur=bills.find(x=>x.id==d.bill);$("#bInfo").innerHTML="<b>"+esc(cur.name)+"</b> · "+inr(cur.amount)+"<br>Due "+fmt(cur.due_date);$("#dB").showModal()}
+ if(b.id=="bPaid"){const{error}=await sb.from("bill_payments").insert({bill_id:cur.id,user_id:me.id,amount:cur.amount});if(error){toast("Error: "+error.message);return}
+  const up=cur.repeat=="0"?{done:true}:{due_date:iso(nextDue(cur.due_date,cur.repeat))};const r=await sb.from("bills").update(up).eq("id",cur.id);$("#dB").close();if(r.error)toast(r.error.message);await refresh();toast("Marked paid")}
+ if(b.id=="bDel"){await sb.from("bills").delete().eq("id",cur.id);$("#dB").close();refresh()}
+ if(d.part){ui=d.part;$("#rv").value="";$("#dR").showModal()}
+ if(b.id=="rSave"){const v=parseFloat($("#rv").value);if(v>0){const{error}=await sb.from("udhar_payments").insert({udhar_id:ui,user_id:me.id,amount:v});if(error)toast(error.message);$("#dR").close();refresh()}}
+ if(d.settle){const u=udhar.find(x=>x.id==d.settle),lf=u.amount-upay.filter(p=>p.udhar_id==u.id).reduce((s,p)=>s+ +p.amount,0);if(lf>0){const{error}=await sb.from("udhar_payments").insert({udhar_id:u.id,user_id:me.id,amount:lf});if(error)toast(error.message);refresh()}}
+ if(d.udel){await sb.from("udhar").delete().eq("id",d.udel);refresh()}
+ if(d.ap)decide(d.ap,true);if(d.rj)decide(d.rj,false)});
+$("#bq").oninput=render;$("#out").onclick=async()=>{await sb.auth.signOut();localStorage.removeItem("bb_keep");location.reload()};
+async function checkUpd(manual){try{const r=await fetch("version.json?"+Date.now(),{cache:"no-store"}),j=await r.json();if(j.version!==CF.VERSION){$("#upd").hidden=false}else if(manual)toast("You're using the latest version.")}catch(_){if(manual)toast("Could not check right now.")}}
+$("#chk").onclick=()=>checkUpd(true);$("#updBtn").onclick=async()=>{try{(await caches.keys()).forEach(k=>caches.delete(k))}catch(_){}location.reload()};
+setInterval(()=>checkUpd(false),1800000);addEventListener("focus",()=>checkUpd(false));
+(async()=>{applyTheme(localStorage.getItem("bb_theme")||"emerald");setLang(lang);checkUpd(false);
+ if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+ if(!CF||!CF.SUPABASE_URL){$("#lerr").textContent="config.js missing.";return}
+ mk(!!localStorage.getItem("bb_keep"));const{data:{session}}=await sb.auth.getSession();if(session){if(await load())loadBP().then(render)}})();
+</script></body></html>
